@@ -18,7 +18,7 @@ type Backoff interface {
 
 type zeroBackoff struct{}
 
-func (b zeroBackoff) Next() time.Duration {
+func (b *zeroBackoff) Next() time.Duration {
 	return time.Duration(0)
 }
 
@@ -26,7 +26,7 @@ type stopBackoff struct{}
 
 var stop time.Duration = -1
 
-func (b stopBackoff) Next() time.Duration {
+func (b *stopBackoff) Next() time.Duration {
 	return stop
 }
 
@@ -43,7 +43,7 @@ func NewConstantBackoff(d time.Duration) *constantBackoff {
 	return &constantBackoff{interval: d}
 }
 
-func (b constantBackoff) Next() time.Duration {
+func (b *constantBackoff) Next() time.Duration {
 	return b.interval
 }
 

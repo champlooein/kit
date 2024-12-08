@@ -17,7 +17,10 @@ const (
 	DefaultMaxElapsedTime = 60 * time.Second
 )
 
-var defaultRetryer = &retryer{maxRetryTime: DefaultMaxRetryTime, maxElapsedTime: DefaultMaxElapsedTime, backoff: DefaultExponentialBackoff}
+var (
+	defaultBackoff = DefaultExponentialBackoff
+	defaultRetryer = retryer{maxRetryTime: DefaultMaxRetryTime, maxElapsedTime: DefaultMaxElapsedTime, backoff: defaultBackoff}
+)
 
 type GoFunc func(ctx context.Context) error
 
@@ -26,15 +29,21 @@ func Do(ctx context.Context, f GoFunc) error {
 }
 
 func WithMaxRetryTime(n int) *retryer {
-	return &retryer{maxRetryTime: n}
+	newRetryer := defaultRetryer
+	newRetryer.maxRetryTime = n
+	return &newRetryer
 }
 
 func WithMaxElapsedTime(n time.Duration) *retryer {
-	return &retryer{maxElapsedTime: n}
+	newRetryer := defaultRetryer
+	newRetryer.maxElapsedTime = n
+	return &newRetryer
 }
 
 func WithBackoff(backoff Backoff) *retryer {
-	return &retryer{backoff: backoff}
+	newRetryer := defaultRetryer
+	newRetryer.backoff = backoff
+	return &newRetryer
 }
 
 type retryer struct {
